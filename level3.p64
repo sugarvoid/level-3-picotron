@@ -1,0 +1,56 @@
+picotron cartridge // www.picotron.net
+version 2
+
+:: gfx/
+:: gfx/0.gfx
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
+NC0yNiAyMjoyMToxNSIscmV2aXNpb249MTQwXV1sejQAKgEAAJQxAADzIXtbMF09e2JtcD1weHUA
+QyAQEATwVgcQB8AX0BfABxAH8FYsZmxhZ3M9MCxwYW5feAgAx3k9MCx6b29tPTh9LD4A-wQICAT_
+BDeeB24HPgceB24HHgcePwALLTExQAD-AAw3LgduB24HLgcuBx4HDkAAGvYLEBAE-jQYBh4GGG4H
+FQYVBhUHXgATBhcGEwAIADsjFyMGAPAMCFMIAF4DCAM1AwgDTgADdwMAPgCTAD4QDhAeBAAPAQEZ
+AD8BH-AxAP----------XHEICAT0ARYUAgATlAgAH4RBAAssMTVCAC-wMDIAfg86AREPMQCNDvYA
+DzEAnw4mAQ8xAP------------------------------------------------90UG09OH19
+:: gfx/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
+NC0yNiAyMjoyMToxNSJdXQ==
+:: map/
+:: map/0.map
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
+NC0yNiAyMjoyMToxNSIscmV2aXNpb249MTAzXV1sejQAaAAAAFgQAADwCHt7Ym1wPXVzZXJkYXRh
+KCJpMTYiLDMyAwAvIjABAP--------------------vxCCIpLGhpZGRlbj1mYWxzZSxwYW5feD0w
+CADSeT0wLHRpbGVfaD0xNgoAEHcKAIB6b29tPTF9fQ==
+:: map/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
+NC0yNiAyMjoyMToxNSJdXQ==
+:: sfx/
+:: sfx/0.sfx
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ5Iixtb2RpZmllZD0iMjAyNS0w
+NC0yNiAyMjoyMToxNSIscmV2aXNpb249MTAzXV1sejQAoAAAAAsKAAD-MHB4dQADKAAABAAED0AQ
+Ag4AAaABIAKgDgAPEAAN8MoBAgNADw_QBAUGB0AMkAgJCgtADJAPDA8NDw4MQAzw-wEA6-8nqgEQ
+Bg8gEAEgASAB8AACEAIOEAEgDyEgATAPQPDDDygP--DGD-gKD-8PgA-3Dw0B8AkBEAYOMAD-----
+-70f-wEArM-ID0AADxBA--_w8P8BAP-qUP----8p
+:: sfx/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
+NC0yNiAyMjoyMToxNSJdXQ==
+:: main.lua
+--[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-04-26 22:21:15",revision=127]]
+cd ("/projects/level-3")
+
+
+include("lib/classic.lua")
+
+include("kgo/hitbox.lua")
+
+include("src/clock.lua")
+include("src/player.lua")
+
+include("src/recticle.lua")
+include("src/building.lua")
+include("src/game.lua")
+:: .info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
+NC0yNiAyMjoyMToxNSIscnVudGltZT0xNix3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
+IzEzIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJnZngvMC5nZngiLHdvcmtzcGFjZV9p
+bmRleD0yfSx7bG9jYXRpb249Im1hcC8wLm1hcCIsd29ya3NwYWNlX2luZGV4PTN9LHtsb2NhdGlv
+bj0ic2Z4LzAuc2Z4Iix3b3Jrc3BhY2VfaW5kZXg9NH19XV0=
+:: [eoc]
