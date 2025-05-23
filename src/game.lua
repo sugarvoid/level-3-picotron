@@ -5,35 +5,28 @@
 local canvas = userdata("u8", 128, 128)
 
 function _init()
-	-- fetch("charcoal.font"):poke(0x4000)
+	--fetch("charcoal.font"):poke(0x4000)
 	init_obj_tables()
 	health=30
-    energy=30
-    energy_max=30
-    bullet_cost=5
-    en_recharge_ticks=0
-    next_en_rechage=60
+	energy=30
+  energy_max=30
+  bullet_cost=5
+  en_recharge_ticks=0
+  next_en_rechage=60
 	palt(0,false)
-    palt(14,true)
-    --poke(0x5f5c,255)
+  palt(14,true)
+  --poke(0x5f5c,255)
 	vid(3)
-
 	player=Player()
 	set_up_buildings()
 end
 
 function _draw()
 	cls(0)
-
-
 	cls()
 	set_draw_target(canvas)
 	cls(12)
 	map()
-
-	
-
-	
 	rectfill(0, 128-17, 128, 128, 5)
 
 

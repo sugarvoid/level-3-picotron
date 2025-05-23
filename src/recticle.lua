@@ -2,8 +2,8 @@ recticle={
     x=20,
     y=20,
     update=function(self)
-        if btn(2) then self.y-=1 end
-        if btn(3) then self.y+=1 end
+        if btn(2) then self.y = mid(80, self.y -1, 0)  end
+        if btn(3) then self.y = mid(80, self.y +1, 0) end
         if btn(0) then self.x-=1 sfx(4) end
         if btn(1) then self.x+=1 sfx(4) end
     end,
