@@ -1,14 +1,28 @@
 local canvas = userdata("u8", 128, 128)
 
+
+is_debug = false
+
+
 function _init()
 	--fetch("charcoal.font"):poke(0x4000)
 	init_obj_tables()
+	gamestate = 1
+	gameover_str = ""
+	game_length = 30
 	health = 30
 	energy = 30
 	energy_max = 30
 	bullet_cost = 5
 	en_recharge_ticks = 0
 	next_en_rechage = 60
+	game_clock = clock:new()
+	next_missile = clock:new()
+
+
+	next_missile:start()
+	game_clock:start()
+
 	palt(0, false)
 	palt(14, true)
 	--poke(0x5f5c,255)
@@ -26,20 +40,27 @@ function _draw()
 	rectfill(0, 128 - 17, 128, 128, 5)
 
 
-	foreach(all_missiles, function(obj) obj:draw() end)
-	foreach(all_buildings, function(obj) obj:draw() end)
-	player:draw()
-	recticle:draw()
+	if gamestate == 1 then
+		foreach(all_missiles, function(obj) obj:draw() end)
+		foreach(all_buildings, function(obj) obj:draw() end)
+		player:draw()
+		recticle:draw()
 
-	foreach(all_bullets, function(obj) obj:draw() end)
+		foreach(all_bullets, function(obj) obj:draw() end)
 
-	p8_print("hp", 2, 120, 7)
-	rectfill(10, 120, 10 + health, 124, 11)
-	rect(10, 120, 10 + 30, 124, 7)
+		p8_print("hp", 2, 120, 7)
+		rectfill(10, 120, 10 + health, 124, 11)
+		rect(10, 120, 10 + 30, 124, 7)
 
-	p8_print("en", 64, 120, 7)
-	rectfill(64 + 8, 120, 64 + 8 + energy, 124, 12)
-	rect(64 + 8, 120, 64 + 8 + energy_max, 124, 7)
+		p8_print("en", 64, 120, 7)
+		rectfill(64 + 8, 120, 64 + 8 + energy, 124, 12)
+		rect(64 + 8, 120, 64 + 8 + energy_max, 124, 7)
+	else
+		p8_print(gameover_str, 60, 50, 7)
+	end
+
+
+
 
 	rect(0, 0, 127, 127, 7)
 
@@ -50,7 +71,10 @@ function _draw()
 	--rectfill(56,3,56+128,3+128, 12)
 	--rect(56,3,56+128,3+128, 7)
 
-	draw_debug(0, 0)
+	if is_debug then
+		draw_debug(0, 0)
+	end
+
 
 
 
@@ -60,12 +84,24 @@ function _draw()
 	set_draw_target()
 
 	spr(canvas, 56, 3) --, 100, 100, 0, 0, 128, 128)
-	print("tesing", 0, 50, 7)
+	--print("tesing", 0, 50, 7)
 end
 
 function _update()
 	check_input()
 	recticle:update()
+	if gamestate == 1 then
+		next_missile:update()
+		game_clock:update()
+	end
+
+	if next_missile.seconds == 4 then
+		spawn_missile()
+		next_missile:restart()
+	end
+	if game_clock == game_length then
+		goto_gameover("you\nwin")
+	end
 	player.x = recticle.x + 7
 	foreach(all_bullets, function(obj) obj:update() end)
 	foreach(all_missiles, function(obj) obj:update() end)
@@ -83,7 +119,9 @@ function check_input()
 		--end
 	end
 
-	if btn(5) then spawn_missile() end
+	if btn(5) then
+		return
+	end
 end
 
 function draw_debug(x, y)
@@ -125,11 +163,16 @@ end
 
 function is_colliding(a, b)
 	if ((b.x >= a.x + a.w) or
-				(b.x + b.w <= a.x) or
-				(b.y >= a.y + a.h) or
-				(b.y + b.h <= a.y)) then
+			(b.x + b.w <= a.x) or
+			(b.y >= a.y + a.h) or
+			(b.y + b.h <= a.y)) then
 		return false
 	else
 		return true
 	end
+end
+
+function goto_gameover(str)
+	gamestate = 2
+	gameover_str = str
 end

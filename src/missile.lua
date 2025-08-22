@@ -7,7 +7,7 @@ local pos={4,6,10,12,14,28,30,32,34,36,54,56,58,60,78,80,82,84,106,108,112,116}
 
 function Missile:new()
     self.anmi_t=0
-    self.y=0
+    self.y=-10
     self.x=rnd(pos)
     --_m.x=10+rnd(120)
     --self.tip={x=0,y=0,w=2,h=1}
@@ -23,7 +23,7 @@ function Missile:draw()
     spr(4,self.x,self.y+8)
     --pset(self.tip.x,self.tip.y,8)
     --rect(self.body.x,self.body.y,self.body.x+self.body.w,self.body.y+self.body.h,8)
-    self.hitbox:draw()
+    --self.hitbox:draw()
 end
 
 function Missile:update()
