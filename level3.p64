@@ -19,7 +19,7 @@ Ag9JABQBSgCBDgQOJA4ULgZLAC8UFk0AJi-wMDIADQ9iAR4PMQD-------------------------
 ------------------------YlBtPTh9fQ==
 :: gfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxMjo1ODoxMyJdXQ==
+OC0yMyAxNTo1MjoxMyJdXQ==
 :: kgo/
 :: kgo/clock.lua
 clock = {}
@@ -63,10 +63,15 @@ function clock:restart()
 end
 
 :: kgo/functions.lua
+--[[pod_format="raw",created="2025-08-23 15:43:30",modified="2025-08-23 15:43:30",revision=0]]
 function p8_print(s, x, y, c)
 	print("\014" .. s, x, y, c)
 end
 
+
+function randi(l,h) --inclusive
+	return flr(rnd(h+1-l))+l
+end
 :: kgo/hitbox.lua
 Hitbox = Object:extend()
 
@@ -93,7 +98,7 @@ end
 
 :: kgo/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjQ4Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxMjo1ODoxMyJdXQ==
+OC0yMyAxNTo1MjoxMyJdXQ==
 :: lib/
 :: lib/classic.lua
 --
@@ -163,7 +168,7 @@ function Object:__call(...)
 end
 :: lib/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjIwIixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxMjo1ODoxMyJdXQ==
+OC0yMyAxNTo1MjoxMyJdXQ==
 :: map/
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
@@ -172,7 +177,7 @@ KCJpMTYiLDMyAwAvIjABAP--8C8zMgQACw8BAE0vMzIEAAsPAQD---------------9X8QoiKSxo
 aWRkZW49ZmFsc2UscGFuX3g9LTYwCgDyAHk9LTU0LHRpbGVfaD0xNgoAEHcKAKB6b29tPTAuNX19
 :: map/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxMjo1ODoxMyJdXQ==
+OC0yMyAxNTo1MjoxMyJdXQ==
 :: sfx/
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ5Iixtb2RpZmllZD0iMjAyNS0w
@@ -182,10 +187,10 @@ Bg8gEAEgASAB8AACEAIOEAEgDyEgATAPQPDDDygP--DGD-gKD-8PgA-3Dw0B8AkBEAYOMAD-----
 -70f-wEArM-ID0AADxBA--_w8P8BAP-qUP----8p
 :: sfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxMjo1ODoxMyJdXQ==
+OC0yMyAxNTo1MjoxMyJdXQ==
 :: src/
 :: src/building.lua
---[[pod_format="raw",created="2025-08-23 12:22:36",modified="2025-08-23 12:42:21",revision=25]]
+--[[pod_format="raw",created="2025-08-23 12:22:36",modified="2025-08-23 15:51:52",revision=27]]
 Building = Object:extend()
 
 function Building:new(x)
@@ -214,7 +219,10 @@ end
 
 function Building:draw()
  --todo: add smoke animation with low health
- self.smoke:draw()
+ if self.health < 4 then
+ 	self.smoke:draw()
+ end
+ 
  --todo: lower building based on health
  --sspr(56,0,16,8,self.x-8,self.top)
  --line(self.x-8,self.y,self.x-8,self.y+40,4)
@@ -245,7 +253,9 @@ function Building:take_damage()
   goto_gameover("game\nover")
  else
   --todo: update smoke y position
+  
   self.y += 8
+  self.smoke:set_y(self.y)
   self.health = mid(0, self.health - 1, 4)
  end
 end
@@ -601,23 +611,40 @@ recticle = {
 }
 
 :: src/smoke.lua
---[[pod_format="raw",created="2025-08-23 12:11:50",modified="2025-08-23 12:30:31",revision=30]]
+--[[pod_format="raw",created="2025-08-23 12:11:50",modified="2025-08-23 15:50:58",revision=68]]
 Smoke=Object:extend()
 
 Pixel=Object:extend()
 function Pixel:new(x,y)
-	self.x=x
+	self.start_x=x
+	self.spawn_x_min = x-5
+	self.spawn_x_max = x+5
+	self.x=randi(self.spawn_x_min, self.spawn_x_max)
 	self.y=y
+	self.speed=rnd({0.2, 0.3, 0.4})
 	self.max_y=y-15
+	self.x_min=self.x-2
+	self.x_max=self.x+2
+	self.move_dir=0.3
 end
 
 function Pixel:update()
 	
 	if self.y <= self.max_y then
 		self.y = self.max_y+15
+		self.x=randi(self.spawn_x_min, self.spawn_x_max)
+		self.speed=rnd({0.2, 0.3, 0.4})
+		self.x_min=self.x-2
+		self.x_max=self.x+2
 	else
-		self.y-=0.5
+		self.y-=self.speed
 	end
+	
+	self.x+=self.move_dir
+	if self.x <= self.x_min or self.x >= self.x_max then
+		self.move_dir*=-1
+	end
+
 end
 
 function Pixel:draw()
@@ -643,11 +670,14 @@ function Smoke:draw()
 end
 
 function Smoke:set_y(y)
-	
+	self.y=y
+	for p in all(self.pixels) do
+		p.max_y=y-15
+	end
 end
 :: src/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTI1IDEyOjQxOjE5Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxMjo1ODoxMyJdXQ==
+OC0yMyAxNTo1MjoxMyJdXQ==
 :: main.lua
 --[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-08-23 12:24:00",revision=375]]
 --cd ("/projects/level-3")
@@ -670,11 +700,12 @@ include("src/building.lua")
 include("src/game.lua")
 :: .info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxMjo1ODoxMyIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
+OC0yMyAxNTo1MjoxMyIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
 IzEyIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJzcmMvbWlzc2lsZS5sdWEiLHdvcmtz
 cGFjZV9pbmRleD0xfSx7bG9jYXRpb249InNyYy9nYW1lLmx1YSM0Iix3b3Jrc3BhY2VfaW5kZXg9
-MX0se2xvY2F0aW9uPSJzcmMvc21va2UubHVhIzUiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRp
-b249InNyYy9idWlsZGluZy5sdWEjMzciLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249Imdm
-eC8wLmdmeCIsd29ya3NwYWNlX2luZGV4PTJ9LHtsb2NhdGlvbj0ibWFwLzAubWFwIix3b3Jrc3Bh
-Y2VfaW5kZXg9M30se2xvY2F0aW9uPSJzZngvMC5zZngiLHdvcmtzcGFjZV9pbmRleD00fX1dXQ==
+MX0se2xvY2F0aW9uPSJzcmMvc21va2UubHVhIzYxIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0
+aW9uPSJzcmMvYnVpbGRpbmcubHVhIzMwIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJr
+Z28vZnVuY3Rpb25zLmx1YSM2Iix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJnZngvMC5n
+ZngiLHdvcmtzcGFjZV9pbmRleD0yfSx7bG9jYXRpb249Im1hcC8wLm1hcCIsd29ya3NwYWNlX2lu
+ZGV4PTN9LHtsb2NhdGlvbj0ic2Z4LzAuc2Z4Iix3b3Jrc3BhY2VfaW5kZXg9NH19XV0=
 :: [eoc]
