@@ -18,7 +18,151 @@ ERMNAL8DDxsTDQ4TPBP8CFIADQ9LAR0fODEAjQDeAX8bF1QXVBckJQwdL-AwMgB_DzABEQ8xAP--
 ----------------------------------------------9iUG09OH19
 :: gfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMiAxMjo0NToxNCJdXQ==
+OC0yMyAxMjowMTo1NiJdXQ==
+:: kgo/
+:: kgo/clock.lua
+clock = {}
+clock.__index = clock
+
+function clock.new()
+   local _c = setmetatable({}, clock)
+   _c.seconds = 0
+   _c.t = 0
+   _c.is_running = false
+   return _c
+end
+
+function clock:tick()
+   self.seconds += 1
+   self.t = 0
+end
+
+function clock:update()
+   if self.is_running then
+      self.t += 1
+      if self.t >= 60 then
+         self:tick()
+      end
+   end
+end
+
+function clock:stop()
+   self.is_running = false
+end
+
+function clock:start()
+   self.is_running = true
+end
+
+function clock:restart()
+   self:stop()
+   self.t = 0
+   self.seconds = 0
+   self:start()
+end
+
+:: kgo/functions.lua
+function p8_print(s, x, y, c)
+	print("\014" .. s, x, y, c)
+end
+
+:: kgo/hitbox.lua
+Hitbox = Object:extend()
+
+function Hitbox:new(owner, x, y, w, h, ox, oy)
+    self.x = x
+    self.y = y
+    self.w = w
+    self.h = h
+    self.__ox = ox or 0
+    self.__oy = oy or 0
+    self.__owner = owner
+end
+
+function Hitbox:update()
+    if self.__owner then
+        self.x = self.__owner.x + self.__ox
+        self.y = self.__owner.y + self.__oy
+    end
+end
+
+function Hitbox:draw()
+    rect(self.x, self.y, self.x + self.w, self.y + self.h, 8)
+end
+
+:: kgo/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjQ4Iixtb2RpZmllZD0iMjAyNS0w
+OC0yMyAxMjowMTo1NiJdXQ==
+:: lib/
+:: lib/classic.lua
+--
+-- classic
+--
+-- Copyright (c) 2014, rxi
+--
+-- This module is free software; you can redistribute it and/or modify it under
+-- the terms of the MIT license. See LICENSE for details.
+--
+
+
+Object = {}
+Object.__index = Object
+
+
+function Object:new()
+end
+
+
+function Object:extend()
+  local cls = {}
+  for k, v in pairs(self) do
+    if k:find("__") == 1 then
+      cls[k] = v
+    end
+  end
+  cls.__index = cls
+  cls.super = self
+  setmetatable(cls, self)
+  return cls
+end
+
+
+function Object:implement(...)
+  for _, cls in pairs({...}) do
+    for k, v in pairs(cls) do
+      if self[k] == nil and type(v) == "function" then
+        self[k] = v
+      end
+    end
+  end
+end
+
+
+function Object:is(T)
+  local mt = getmetatable(self)
+  while mt do
+    if mt == T then
+      return true
+    end
+    mt = getmetatable(mt)
+  end
+  return false
+end
+
+
+function Object:__tostring()
+  return "Object"
+end
+
+
+function Object:__call(...)
+  local obj = setmetatable({}, self)
+  obj:new(...)
+  return obj
+end
+:: lib/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjIwIixtb2RpZmllZD0iMjAyNS0w
+OC0yMyAxMjowMTo1NiJdXQ==
 :: map/
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
@@ -27,7 +171,7 @@ KCJpMTYiLDMyAwAvIjABAP--8C8zMgQACw8BAE0vMzIEAAsPAQD---------------9X8QoiKSxo
 aWRkZW49ZmFsc2UscGFuX3g9LTYwCgDyAHk9LTU0LHRpbGVfaD0xNgoAEHcKAKB6b29tPTAuNX19
 :: map/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMiAxMjo0NToxNCJdXQ==
+OC0yMyAxMjowMTo1NiJdXQ==
 :: sfx/
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ5Iixtb2RpZmllZD0iMjAyNS0w
@@ -37,10 +181,412 @@ Bg8gEAEgASAB8AACEAIOEAEgDyEgATAPQPDDDygP--DGD-gKD-8PgA-3Dw0B8AkBEAYOMAD-----
 -70f-wEArM-ID0AADxBA--_w8P8BAP-qUP----8p
 :: sfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMiAxMjo0NToxNCJdXQ==
+OC0yMyAxMjowMTo1NiJdXQ==
+:: src/
+:: src/building.lua
+Building = Object:extend()
+
+function Building:new(x)
+    self.health = 4
+    self.x = x
+    self.y = 71
+    self.top = 70
+    self.has_fallen = false
+    self.hitbox = Hitbox(self, self.x, self.y, 15, 4, -8)
+end
+
+function Building:update()
+    for m in all(all_missiles) do
+        if is_colliding(self.hitbox, m.hitbox) then
+            del(all_missiles, m)
+            self:take_damage()
+            sfx(3)
+        end
+    end
+    self.hitbox:update()
+end
+
+function Building:draw()
+    --todo: add smoke animation with low health
+    --todo: lower building based on health
+    --sspr(56,0,16,8,self.x-8,self.top)
+    --line(self.x-8,self.y,self.x-8,self.y+40,4)
+    --line(self.x+7,self.y,self.x+7,self.y+40,4)
+
+    for i = 0, self.health do
+        spr(48, self.x, self.y + (8 * i))
+        spr(48, self.x - 8, self.y + (8 * i))
+    end
+
+    spr(56, self.x - 4, self.y + (8 * self.health)) --32)
+
+    --rect(self.x-8,self.y,self.x+7,self.y+2,5)
+    --print(self.health, self.x - 2, self.y + 4, 0)
+    --self.hitbox:draw()
+end
+
+function Building:take_damage()
+    if self.health == 0 then
+        goto_gameover("game\nover")
+    else
+        self.y += 8
+        self.health = mid(0, self.health - 1, 4)
+    end
+end
+
+:: src/bullet.lua
+--[[pod_format="raw",created="2025-08-03 21:02:44",modified="2025-08-03 21:02:44",revision=0]]
+Bullet = Object:extend()
+
+
+local start_y = 102
+
+function Bullet:new()
+    self.active = false
+    self.img = 22
+    self.end_y = recticle.y + 8
+    self.halfway = start_y + (self.end_y - start_y) * 0.5
+    self.three_quat = ceil(start_y + (self.end_y - start_y) * 0.75)
+    self.y = start_y
+    self.life = 30
+    self.ignited = false
+    self.x = recticle.x
+    self.starting_size = 5
+    -- self.hitbox={x=0,y=0,h=18,w=18}
+    self.hitbox = Hitbox(self, self.x, self.y, 18, 18, -6, -6)
+    self.size = 8
+    self.ticker = 0
+    self.peek_y = 0
+end
+
+function Bullet:draw()
+    --if not self.ignited then
+    --rect(self.x-4,self.y-4,self.x+4,self.y+4,9)
+    spr(self.img, self.x - 4, self.y - 4)
+    --self.hitbox:draw()
+    --end
+    --rect(self.hitbox.x,self.hitbox.y,self.hitbox.x+self.hitbox.w,self.hitbox.y+self.hitbox.h,5)
+end
+
+function Bullet:update()
+    if not self.ignited then
+        self.y -= 1
+    end
+
+    self.ticker += 1
+    self.hitbox:update()
+    --self.hitbox.x=self.x-9
+    --self.hitbox.y=self.y-9
+    if self.ticker == 20 then
+        self.ticker = 0
+    end
+
+    if self.y <= self.halfway and self.y >= self.three_quat then
+        -- Change sprite at halfway point
+        self.img = 9
+    elseif self.y <= self.three_quat then
+        -- Change sprite at 3/4ths point
+        self.img = 10
+        --self.img=16
+    else
+        -- Default sprite
+        self.img = 8
+    end
+
+    if self.ignited then
+        for m in all(all_missiles) do
+            if is_colliding(self.hitbox, m.hitbox) then
+                del(all_missiles, m)
+            end
+        end
+    end
+
+    if self.y <= self.end_y then
+        self.ignited = true
+        --add_boom_sfx(self.x-8,self.y-8)
+    end
+
+    if self.ignited then
+        self.life -= 1
+        self.img = 16
+        if self.life == 0 then
+            del(all_bullets, self)
+        end
+    end
+end
+
+:: src/game.lua
+local canvas = userdata("u8", 128, 128)
+
+
+is_debug = false
+
+
+function _init()
+	--fetch("charcoal.font"):poke(0x4000)
+	init_obj_tables()
+	gamestate = 1
+	gameover_str = ""
+	game_length = 30
+	health = 30
+	energy = 30
+	energy_max = 30
+	bullet_cost = 5
+	en_recharge_ticks = 0
+	next_en_rechage = 60
+	game_clock = clock:new()
+	next_missile = clock:new()
+
+
+	next_missile:start()
+	game_clock:start()
+
+	palt(0, false)
+	palt(14, true)
+	--poke(0x5f5c,255)
+	vid(3)
+	player = Player()
+	set_up_buildings()
+end
+
+function _draw()
+	cls(0)
+	cls()
+	set_draw_target(canvas)
+	cls(12)
+	map()
+	rectfill(0, 128 - 17, 128, 128, 5)
+
+
+	if gamestate == 1 then
+		foreach(all_missiles, function(obj) obj:draw() end)
+		foreach(all_buildings, function(obj) obj:draw() end)
+		player:draw()
+		recticle:draw()
+
+		foreach(all_bullets, function(obj) obj:draw() end)
+
+		p8_print("hp", 2, 120, 7)
+		rectfill(10, 120, 10 + health, 124, 11)
+		rect(10, 120, 10 + 30, 124, 7)
+
+		p8_print("en", 64, 120, 7)
+		rectfill(64 + 8, 120, 64 + 8 + energy, 124, 12)
+		rect(64 + 8, 120, 64 + 8 + energy_max, 124, 7)
+	else
+		p8_print(gameover_str, 60, 50, 7)
+	end
+
+
+
+
+	rect(0, 0, 127, 127, 7)
+
+
+
+	set_draw_target()
+
+	--rectfill(56,3,56+128,3+128, 12)
+	--rect(56,3,56+128,3+128, 7)
+
+	if is_debug then
+		draw_debug(0, 0)
+	end
+
+
+
+
+
+
+
+	set_draw_target()
+
+	spr(canvas, 56, 3) --, 100, 100, 0, 0, 128, 128)
+	--print("tesing", 0, 50, 7)
+end
+
+function _update()
+	check_input()
+	recticle:update()
+	if gamestate == 1 then
+		next_missile:update()
+		game_clock:update()
+	end
+
+	if next_missile.seconds == 4 then
+		spawn_missile()
+		next_missile:restart()
+	end
+	if game_clock == game_length then
+		goto_gameover("you\nwin")
+	end
+	player.x = recticle.x + 7
+	foreach(all_bullets, function(obj) obj:update() end)
+	foreach(all_missiles, function(obj) obj:update() end)
+	foreach(all_buildings, function(obj) obj:update() end)
+end
+
+function check_input()
+	-- body
+	if btnp(4) then
+		notify("pew")
+		--if energy>=bullet_cost then
+		--  sfx(0)
+		--energy-=bullet_cost
+		player:shoot_bullet()
+		--end
+	end
+
+	if btn(5) then
+		return
+	end
+end
+
+function draw_debug(x, y)
+	--Debugs Table
+	local debugs = {
+		"\#3" .. "fps: " .. stat(7),
+		"\#3" .. "cpu: " .. flr(stat(1) * 100) .. "%",
+		"\#3" .. "ram: " .. flr(stat(0) / 1048576 * 100) / 100 .. "mb",
+		----------------
+		--"\#1" .. "table: "    .. #table,
+		--"\#1" .. "player.x: "    .. player.x,
+	}
+
+	--Print Debugs
+	for i = 0, #debugs do
+		local txt = debugs[i + 1] or ""
+		local pad = string.rep(" ", max(0, 15 - #txt))
+		print("\014" .. txt .. pad, x, y + (7 * i), 7)
+	end
+end
+
+function init_obj_tables()
+	all_missiles = {}
+	all_buildings = {}
+	all_bullets = {}
+	all_booms = {}
+end
+
+function set_up_buildings()
+	-- body
+	all_buildings = {
+		Building(14),
+		Building(39),
+		Building(65),
+		Building(90),
+		Building(115),
+	}
+end
+
+function is_colliding(a, b)
+	if ((b.x >= a.x + a.w) or
+			(b.x + b.w <= a.x) or
+			(b.y >= a.y + a.h) or
+			(b.y + b.h <= a.y)) then
+		return false
+	else
+		return true
+	end
+end
+
+function goto_gameover(str)
+	gamestate = 2
+	gameover_str = str
+end
+
+:: src/missile.lua
+
+
+
+Missile=Object:extend()
+
+local pos={4,6,10,12,14,28,30,32,34,36,54,56,58,60,78,80,82,84,106,108,112,116}
+
+function Missile:new()
+    self.anmi_t=0
+    self.y=-10
+    self.x=rnd(pos)
+    --_m.x=10+rnd(120)
+    --self.tip={x=0,y=0,w=2,h=1}
+    --self.body={x=0,y=0,w=3,h=8}
+    self.hitbox = Hitbox(self,self.x,self.y+8,3,4, 2, 11)
+    self.launched=false
+    add(all_missiles, self)
+end
+
+function Missile:draw()
+    --todo: add flame animation
+    spr(5+self.anmi_t%15\7.5,self.x,self.y)
+    spr(4,self.x,self.y+8)
+    --pset(self.tip.x,self.tip.y,8)
+    --rect(self.body.x,self.body.y,self.body.x+self.body.w,self.body.y+self.body.h,8)
+    --self.hitbox:draw()
+end
+
+function Missile:update()
+    
+    self.y+=0.2
+    self.anmi_t+=1
+    --self.y+=1
+    --self.body.x=self.x+2
+    --self.body.y=self.y+7
+    --self.tip.y=self.y+15
+    --self.tip.x=self.x+3
+    self.hitbox:update()
+end
+
+function spawn_missile()
+    Missile()
+end
+
+:: src/player.lua
+Player = Object:extend()
+
+function Player:new()
+    self.x = 30
+    self.y = 102
+end
+
+function Player:draw()
+    spr(7,self.x-5,106)
+    spr(3, self.x, self.y)
+end
+
+function Player:shoot_bullet()
+    local b = Bullet(self.x)
+    add(all_bullets, b)
+end
+:: src/recticle.lua
+recticle = {
+    x = 20,
+    y = 20,
+    update = function(self)
+        if btn(2) then self.y = mid(80, self.y - 1, 0) end
+        if btn(3) then self.y = mid(80, self.y + 1, 0) end
+        if btn(0) then
+            self.x -= 1
+            sfx(4)
+        end
+        if btn(1) then
+            self.x += 1
+            sfx(4)
+        end
+    end,
+    draw = function(self)
+        spr(1, self.x, self.y)
+        spr(1, self.x + 8, self.y, true)
+        spr(1, self.x, self.y + 8, false, true)
+        spr(1, self.x + 8, self.y + 8, true, true)
+    end
+}
+
+:: src/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTI1IDEyOjQxOjE5Iixtb2RpZmllZD0iMjAyNS0w
+OC0yMyAxMjowMTo1NiJdXQ==
 :: main.lua
---[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-05-23 12:56:25",revision=373]]
-cd ("/projects/level-3")
+--[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-08-23 12:00:38",revision=374]]
+--cd ("/projects/level-3")
 
 -- Lib
 include("lib/classic.lua")
@@ -59,8 +605,10 @@ include("src/building.lua")
 include("src/game.lua")
 :: .info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMiAxMjo0NToxNCIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
-IzEiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249ImdmeC8wLmdmeCIsd29ya3NwYWNlX2lu
-ZGV4PTJ9LHtsb2NhdGlvbj0ibWFwLzAubWFwIix3b3Jrc3BhY2VfaW5kZXg9M30se2xvY2F0aW9u
-PSJzZngvMC5zZngiLHdvcmtzcGFjZV9pbmRleD00fX1dXQ==
+OC0yMyAxMjowMTo1NiIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
+IzEiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249Imtnby9mdW5jdGlvbnMubHVhIix3b3Jr
+c3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJzcmMvbWlzc2lsZS5sdWEiLHdvcmtzcGFjZV9pbmRl
+eD0xfSx7bG9jYXRpb249ImdmeC8wLmdmeCIsd29ya3NwYWNlX2luZGV4PTJ9LHtsb2NhdGlvbj0i
+bWFwLzAubWFwIix3b3Jrc3BhY2VfaW5kZXg9M30se2xvY2F0aW9uPSJzZngvMC5zZngiLHdvcmtz
+cGFjZV9pbmRleD00fX1dXQ==
 :: [eoc]
