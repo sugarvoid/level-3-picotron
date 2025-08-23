@@ -19,7 +19,7 @@ Ag9JABQBSgCBDgQOJA4ULgZLAC8UFk0AJi-wMDIADQ9iAR4PMQD-------------------------
 ------------------------YlBtPTh9fQ==
 :: gfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxNTo1MjoxMyJdXQ==
+OC0yMyAyMDo0MDo1NSJdXQ==
 :: kgo/
 :: kgo/clock.lua
 clock = {}
@@ -63,13 +63,12 @@ function clock:restart()
 end
 
 :: kgo/functions.lua
---[[pod_format="raw",created="2025-08-23 15:43:30",modified="2025-08-23 15:43:30",revision=0]]
+--[[pod_format="raw",created="2025-08-23 15:43:30",modified="2025-08-23 17:48:16",revision=1]]
 function p8_print(s, x, y, c)
 	print("\014" .. s, x, y, c)
 end
 
-
-function randi(l,h) --inclusive
+function randi(l,h)
 	return flr(rnd(h+1-l))+l
 end
 :: kgo/hitbox.lua
@@ -98,7 +97,7 @@ end
 
 :: kgo/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjQ4Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxNTo1MjoxMyJdXQ==
+OC0yMyAyMDo0MDo1NSJdXQ==
 :: lib/
 :: lib/classic.lua
 --
@@ -168,7 +167,7 @@ function Object:__call(...)
 end
 :: lib/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjIwIixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxNTo1MjoxMyJdXQ==
+OC0yMyAyMDo0MDo1NSJdXQ==
 :: map/
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
@@ -177,7 +176,7 @@ KCJpMTYiLDMyAwAvIjABAP--8C8zMgQACw8BAE0vMzIEAAsPAQD---------------9X8QoiKSxo
 aWRkZW49ZmFsc2UscGFuX3g9LTYwCgDyAHk9LTU0LHRpbGVfaD0xNgoAEHcKAKB6b29tPTAuNX19
 :: map/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxNTo1MjoxMyJdXQ==
+OC0yMyAyMDo0MDo1NSJdXQ==
 :: sfx/
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ5Iixtb2RpZmllZD0iMjAyNS0w
@@ -187,7 +186,7 @@ Bg8gEAEgASAB8AACEAIOEAEgDyEgATAPQPDDDygP--DGD-gKD-8PgA-3Dw0B8AkBEAYOMAD-----
 -70f-wEArM-ID0AADxBA--_w8P8BAP-qUP----8p
 :: sfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxNTo1MjoxMyJdXQ==
+OC0yMyAyMDo0MDo1NSJdXQ==
 :: src/
 :: src/building.lua
 --[[pod_format="raw",created="2025-08-23 12:22:36",modified="2025-08-23 15:51:52",revision=27]]
@@ -342,7 +341,7 @@ function Bullet:update()
 end
 
 :: src/game.lua
---[[pod_format="raw",created="2025-08-23 12:05:32",modified="2025-08-23 12:29:10",revision=2]]
+--[[pod_format="raw",created="2025-08-23 12:05:32",modified="2025-08-23 20:40:25",revision=12]]
 local canvas = userdata("u8", 128, 128)
 
 
@@ -358,8 +357,7 @@ function _init()
 	missile_speed = 0
 	player_score = 0
 	health = 30
-	energy = 30
-	energy_max = 30
+	
 	bullet_cost = 5
 	en_recharge_ticks = 0
 	next_en_rechage = 60
@@ -400,8 +398,8 @@ function _draw()
 		rect(10, 120, 10 + 30, 124, 7)
 
 		p8_print("en", 64, 120, 7)
-		rectfill(64 + 8, 120, 64 + 8 + energy, 124, 12)
-		rect(64 + 8, 120, 64 + 8 + energy_max, 124, 7)
+		rectfill(64 + 8, 120, 64 + 8 + player.energy, 124, 12)
+		rect(64 + 8, 120, 64 + 8 + player.energy_max, 124, 7)
 	else
 		p8_print(gameover_str, 60, 50, 7)
 	end
@@ -453,16 +451,29 @@ function _update()
 	foreach(all_bullets, function(obj) obj:update() end)
 	foreach(all_missiles, function(obj) obj:update() end)
 	foreach(all_buildings, function(obj) obj:update() end)
+	if player.energy < player.energy_max then
+		en_recharge_ticks+=1
+	end
+	if en_recharge_ticks == next_en_rechage then
+		recharge_en()
+      en_recharge_ticks = 0
+   end
 end
 
 function check_input()
 	-- body
 	if btnp(4) then
-		notify("pew")
+		--if player.energy >= bullet_cost then
+	      --sfx(0)
+	      --player.energy -= bullet_cost
+			--shoot_bullet()
+		player:shoot_bullet()
+	   --end
+		--notify("pew")
 		--if energy>=bullet_cost then
 		--  sfx(0)
 		--energy-=bullet_cost
-		player:shoot_bullet()
+		
 		--end
 	end
 
@@ -524,9 +535,12 @@ function goto_gameover(str)
 	gameover_str = str
 end
 
+function recharge_en()
+    player.energy = mid(0, player.energy + bullet_cost, player.energy_max)
+end
+
 :: src/missile.lua
-
-
+--[[pod_format="raw",created="2025-08-23 17:48:28",modified="2025-08-23 17:48:28",revision=0]]
 
 Missile=Object:extend()
 
@@ -570,11 +584,14 @@ function spawn_missile()
 end
 
 :: src/player.lua
+--[[pod_format="raw",created="2025-08-23 20:31:16",modified="2025-08-23 20:37:45",revision=1]]
 Player = Object:extend()
 
 function Player:new()
-    self.x = 30
-    self.y = 102
+	self.x = 30
+	self.y = 102
+	self.energy = 30
+	self.energy_max = 30
 end
 
 function Player:draw()
@@ -583,8 +600,12 @@ function Player:draw()
 end
 
 function Player:shoot_bullet()
-    local b = Bullet(self.x)
-    add(all_bullets, b)
+	if self.energy >= bullet_cost then
+	   --sfx(0)
+		self.energy -= bullet_cost
+		local b = Bullet(self.x)
+		add(all_bullets, b)
+	 end
 end
 :: src/recticle.lua
 recticle = {
@@ -677,7 +698,7 @@ function Smoke:set_y(y)
 end
 :: src/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTI1IDEyOjQxOjE5Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxNTo1MjoxMyJdXQ==
+OC0yMyAyMDo0MDo1NSJdXQ==
 :: main.lua
 --[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-08-23 12:24:00",revision=375]]
 --cd ("/projects/level-3")
@@ -700,12 +721,12 @@ include("src/building.lua")
 include("src/game.lua")
 :: .info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAxNTo1MjoxMyIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
-IzEyIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJzcmMvbWlzc2lsZS5sdWEiLHdvcmtz
-cGFjZV9pbmRleD0xfSx7bG9jYXRpb249InNyYy9nYW1lLmx1YSM0Iix3b3Jrc3BhY2VfaW5kZXg9
-MX0se2xvY2F0aW9uPSJzcmMvc21va2UubHVhIzYxIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0
-aW9uPSJzcmMvYnVpbGRpbmcubHVhIzMwIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJr
-Z28vZnVuY3Rpb25zLmx1YSM2Iix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJnZngvMC5n
-ZngiLHdvcmtzcGFjZV9pbmRleD0yfSx7bG9jYXRpb249Im1hcC8wLm1hcCIsd29ya3NwYWNlX2lu
-ZGV4PTN9LHtsb2NhdGlvbj0ic2Z4LzAuc2Z4Iix3b3Jrc3BhY2VfaW5kZXg9NH19XV0=
+OC0yMyAyMDo0MDo1NSIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
+IzEyIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJzcmMvbWlzc2lsZS5sdWEjMiIsd29y
+a3NwYWNlX2luZGV4PTF9LHtsb2NhdGlvbj0ic3JjL2dhbWUubHVhIzExMCIsd29ya3NwYWNlX2lu
+ZGV4PTF9LHtsb2NhdGlvbj0ic3JjL3Ntb2tlLmx1YSM2MSIsd29ya3NwYWNlX2luZGV4PTF9LHts
+b2NhdGlvbj0ic3JjL2J1aWxkaW5nLmx1YSMzMCIsd29ya3NwYWNlX2luZGV4PTF9LHtsb2NhdGlv
+bj0ic3JjL3BsYXllci5sdWEjMjAiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249ImdmeC8w
+LmdmeCIsd29ya3NwYWNlX2luZGV4PTJ9LHtsb2NhdGlvbj0ibWFwLzAubWFwIix3b3Jrc3BhY2Vf
+aW5kZXg9M30se2xvY2F0aW9uPSJzZngvMC5zZngiLHdvcmtzcGFjZV9pbmRleD00fX1dXQ==
 :: [eoc]
