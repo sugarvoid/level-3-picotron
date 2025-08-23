@@ -19,7 +19,7 @@ Ag9JABQBSgCBDgQOJA4ULgZLAC8UFk0AJi-wMDIADQ9iAR4PMQD-------------------------
 ------------------------YlBtPTh9fQ==
 :: gfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMDo0MDo1NSJdXQ==
+OC0yMyAyMjo0NDowMiJdXQ==
 :: kgo/
 :: kgo/clock.lua
 clock = {}
@@ -97,7 +97,7 @@ end
 
 :: kgo/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjQ4Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMDo0MDo1NSJdXQ==
+OC0yMyAyMjo0NDowMiJdXQ==
 :: lib/
 :: lib/classic.lua
 --
@@ -167,7 +167,7 @@ function Object:__call(...)
 end
 :: lib/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjIwIixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMDo0MDo1NSJdXQ==
+OC0yMyAyMjo0NDowMiJdXQ==
 :: map/
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
@@ -176,7 +176,7 @@ KCJpMTYiLDMyAwAvIjABAP--8C8zMgQACw8BAE0vMzIEAAsPAQD---------------9X8QoiKSxo
 aWRkZW49ZmFsc2UscGFuX3g9LTYwCgDyAHk9LTU0LHRpbGVfaD0xNgoAEHcKAKB6b29tPTAuNX19
 :: map/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMDo0MDo1NSJdXQ==
+OC0yMyAyMjo0NDowMiJdXQ==
 :: sfx/
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ5Iixtb2RpZmllZD0iMjAyNS0w
@@ -186,10 +186,10 @@ Bg8gEAEgASAB8AACEAIOEAEgDyEgATAPQPDDDygP--DGD-gKD-8PgA-3Dw0B8AkBEAYOMAD-----
 -70f-wEArM-ID0AADxBA--_w8P8BAP-qUP----8p
 :: sfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMDo0MDo1NSJdXQ==
+OC0yMyAyMjo0NDowMiJdXQ==
 :: src/
 :: src/building.lua
---[[pod_format="raw",created="2025-08-23 12:22:36",modified="2025-08-23 15:51:52",revision=27]]
+--[[pod_format="raw",created="2025-08-23 12:22:36",modified="2025-08-23 22:43:11",revision=29]]
 Building = Object:extend()
 
 function Building:new(x)
@@ -248,6 +248,10 @@ function Building:draw()
 end
 
 function Building:take_damage()
+ if self.health == 4 then
+  self.top_r_spr=57
+  self.top_l_spr=58
+ end
  if self.health == 0 then
   goto_gameover("game\nover")
  else
@@ -341,23 +345,205 @@ function Bullet:update()
 end
 
 :: src/game.lua
---[[pod_format="raw",created="2025-08-23 12:05:32",modified="2025-08-23 20:40:25",revision=12]]
-local canvas = userdata("u8", 128, 128)
+--[[pod_format="raw",created="2025-08-23 12:05:32",modified="2025-08-23 22:23:45",revision=13]]
 
+:: src/missile.lua
+--[[pod_format="raw",created="2025-08-23 17:48:28",modified="2025-08-23 17:48:28",revision=0]]
+
+Missile=Object:extend()
+
+local pos={4,6,10,12,14,28,30,32,34,36,54,56,58,60,78,80,82,84,106,108,112,116}
+
+function Missile:new()
+    self.anmi_t=0
+    self.y=-10
+    self.x=rnd(pos)
+    --_m.x=10+rnd(120)
+    --self.tip={x=0,y=0,w=2,h=1}
+    --self.body={x=0,y=0,w=3,h=8}
+    self.hitbox = Hitbox(self,self.x,self.y+8,3,4, 2, 11)
+    self.launched=false
+    add(all_missiles, self)
+end
+
+function Missile:draw()
+    --todo: add flame animation
+    spr(5+self.anmi_t%15\7.5,self.x,self.y)
+    spr(4,self.x,self.y+8)
+    --pset(self.tip.x,self.tip.y,8)
+    --rect(self.body.x,self.body.y,self.body.x+self.body.w,self.body.y+self.body.h,8)
+    --self.hitbox:draw()
+end
+
+function Missile:update()
+    
+    self.y+=0.2
+    self.anmi_t+=1
+    --self.y+=1
+    --self.body.x=self.x+2
+    --self.body.y=self.y+7
+    --self.tip.y=self.y+15
+    --self.tip.x=self.x+3
+    self.hitbox:update()
+end
+
+function spawn_missile()
+    Missile()
+end
+
+:: src/pixel.lua
+--[[pod_format="raw",created="2025-08-23 22:33:17",modified="2025-08-23 22:41:16",revision=14]]
+
+Pixel=Object:extend()
+function Pixel:new(x,y)
+	self.start_x=x
+	self.spawn_x_min = x-5
+	self.spawn_x_max = x+5
+	self.x=randi(self.spawn_x_min, self.spawn_x_max)
+	self.y=y
+	
+	self.max_y=y-15
+	self.move_dir=0.3
+	self:reset_props()
+end
+
+function Pixel:reset_props()
+	self.x=randi(self.spawn_x_min, self.spawn_x_max)
+	self.col=rnd({0,5,24,22})
+	self.speed=rnd({0.2, 0.3, 0.4})
+	self.x_min=self.x-2
+	self.x_max=self.x+2
+end
+
+function Pixel:update()
+	if self.y <= self.max_y then
+		self.y = self.max_y+15
+		self:reset_props()
+	else
+		self.y-=self.speed
+	end
+	
+	self.x+=self.move_dir
+	
+	if self.x <= self.x_min or self.x >= self.x_max then
+		self.move_dir*=-1
+	end
+end
+
+function Pixel:draw()
+	pset(self.x,self.y,self.col)
+end
+:: src/player.lua
+--[[pod_format="raw",created="2025-08-23 20:31:16",modified="2025-08-23 20:37:45",revision=1]]
+Player = Object:extend()
+
+function Player:new()
+	self.x = 30
+	self.y = 102
+	self.energy = 30
+	self.energy_max = 30
+end
+
+function Player:draw()
+    spr(7,self.x-5,106)
+    spr(3, self.x, self.y)
+end
+
+function Player:shoot_bullet()
+	if self.energy >= bullet_cost then
+	   --sfx(0)
+		self.energy -= bullet_cost
+		local b = Bullet(self.x)
+		add(all_bullets, b)
+	 end
+end
+:: src/recticle.lua
+recticle = {
+    x = 20,
+    y = 20,
+    update = function(self)
+        if btn(2) then self.y = mid(80, self.y - 1, 0) end
+        if btn(3) then self.y = mid(80, self.y + 1, 0) end
+        if btn(0) then
+            self.x -= 1
+            sfx(4)
+        end
+        if btn(1) then
+            self.x += 1
+            sfx(4)
+        end
+    end,
+    draw = function(self)
+        spr(1, self.x, self.y)
+        spr(1, self.x + 8, self.y, true)
+        spr(1, self.x, self.y + 8, false, true)
+        spr(1, self.x + 8, self.y + 8, true, true)
+    end
+}
+
+:: src/smoke.lua
+--[[pod_format="raw",created="2025-08-23 12:11:50",modified="2025-08-23 22:38:18",revision=77]]
+
+--local pos={4,6,10,12,14,28,30,32,34,36,54,56,58,60,78,80,82,84,106,108,112,116}
+
+Smoke=Object:extend()
+
+function Smoke:new(x,y)
+	self.pixels = {}
+	for i=1,10 do 
+		local p = Pixel(x,y)
+		add(self.pixels, p)
+	end
+end
+
+function Smoke:update()
+	foreach(self.pixels, function(obj) obj:update() end)
+end
+
+function Smoke:draw()
+	foreach(self.pixels, function(obj) obj:draw() end)
+end
+
+function Smoke:set_y(y)
+	self.y=y
+	for p in all(self.pixels) do
+		p.max_y=y-15
+	end
+end
+:: src/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTI1IDEyOjQxOjE5Iixtb2RpZmllZD0iMjAyNS0w
+OC0yMyAyMjo0NDowMiJdXQ==
+:: main.lua
+--[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-08-23 22:33:31",revision=390]]
 
 is_debug = true
 
+-- Lib
+include("lib/classic.lua")
+
+-- Kgo
+include("kgo/functions.lua")
+include("kgo/hitbox.lua")
+include("kgo/clock.lua")
+
+-- Src
+include("src/pixel.lua")
+include("src/smoke.lua")
+include("src/missile.lua")
+include("src/bullet.lua")
+include("src/player.lua")
+include("src/recticle.lua")
+include("src/building.lua")
+
+local canvas = userdata("u8", 128, 128)
 
 function _init()
-	--fetch("charcoal.font"):poke(0x4000)
 	init_obj_tables()
 	gamestate = 1
 	gameover_str = ""
 	game_length = 30
 	missile_speed = 0
 	player_score = 0
-	health = 30
-	
 	bullet_cost = 5
 	en_recharge_ticks = 0
 	next_en_rechage = 60
@@ -393,13 +579,9 @@ function _draw()
 
 		foreach(all_bullets, function(obj) obj:draw() end)
 
-		p8_print("hp", 2, 120, 7)
-		rectfill(10, 120, 10 + health, 124, 11)
-		rect(10, 120, 10 + 30, 124, 7)
-
-		p8_print("en", 64, 120, 7)
-		rectfill(64 + 8, 120, 64 + 8 + player.energy, 124, 12)
-		rect(64 + 8, 120, 64 + 8 + player.energy_max, 124, 7)
+		p8_print("en", 4, 121, 7)
+		rectfill(4 + 8, 121, 4 + 8 + player.energy, 125, 9)
+		rect(4 + 8, 121, 4 + 8 + player.energy_max, 125, 7)
 	else
 		p8_print(gameover_str, 60, 50, 7)
 	end
@@ -413,23 +595,12 @@ function _draw()
 
 	set_draw_target()
 
-	--rectfill(56,3,56+128,3+128, 12)
-	--rect(56,3,56+128,3+128, 7)
-
 	if is_debug then
 		draw_debug(0, 0)
 	end
 
-
-
-
-
-
-
 	set_draw_target()
-
-	spr(canvas, 56, 3) --, 100, 100, 0, 0, 128, 128)
-	--print("tesing", 0, 50, 7)
+	spr(canvas, 56, 3)
 end
 
 function _update()
@@ -539,194 +710,15 @@ function recharge_en()
     player.energy = mid(0, player.energy + bullet_cost, player.energy_max)
 end
 
-:: src/missile.lua
---[[pod_format="raw",created="2025-08-23 17:48:28",modified="2025-08-23 17:48:28",revision=0]]
-
-Missile=Object:extend()
-
-local pos={4,6,10,12,14,28,30,32,34,36,54,56,58,60,78,80,82,84,106,108,112,116}
-
-function Missile:new()
-    self.anmi_t=0
-    self.y=-10
-    self.x=rnd(pos)
-    --_m.x=10+rnd(120)
-    --self.tip={x=0,y=0,w=2,h=1}
-    --self.body={x=0,y=0,w=3,h=8}
-    self.hitbox = Hitbox(self,self.x,self.y+8,3,4, 2, 11)
-    self.launched=false
-    add(all_missiles, self)
-end
-
-function Missile:draw()
-    --todo: add flame animation
-    spr(5+self.anmi_t%15\7.5,self.x,self.y)
-    spr(4,self.x,self.y+8)
-    --pset(self.tip.x,self.tip.y,8)
-    --rect(self.body.x,self.body.y,self.body.x+self.body.w,self.body.y+self.body.h,8)
-    --self.hitbox:draw()
-end
-
-function Missile:update()
-    
-    self.y+=0.2
-    self.anmi_t+=1
-    --self.y+=1
-    --self.body.x=self.x+2
-    --self.body.y=self.y+7
-    --self.tip.y=self.y+15
-    --self.tip.x=self.x+3
-    self.hitbox:update()
-end
-
-function spawn_missile()
-    Missile()
-end
-
-:: src/player.lua
---[[pod_format="raw",created="2025-08-23 20:31:16",modified="2025-08-23 20:37:45",revision=1]]
-Player = Object:extend()
-
-function Player:new()
-	self.x = 30
-	self.y = 102
-	self.energy = 30
-	self.energy_max = 30
-end
-
-function Player:draw()
-    spr(7,self.x-5,106)
-    spr(3, self.x, self.y)
-end
-
-function Player:shoot_bullet()
-	if self.energy >= bullet_cost then
-	   --sfx(0)
-		self.energy -= bullet_cost
-		local b = Bullet(self.x)
-		add(all_bullets, b)
-	 end
-end
-:: src/recticle.lua
-recticle = {
-    x = 20,
-    y = 20,
-    update = function(self)
-        if btn(2) then self.y = mid(80, self.y - 1, 0) end
-        if btn(3) then self.y = mid(80, self.y + 1, 0) end
-        if btn(0) then
-            self.x -= 1
-            sfx(4)
-        end
-        if btn(1) then
-            self.x += 1
-            sfx(4)
-        end
-    end,
-    draw = function(self)
-        spr(1, self.x, self.y)
-        spr(1, self.x + 8, self.y, true)
-        spr(1, self.x, self.y + 8, false, true)
-        spr(1, self.x + 8, self.y + 8, true, true)
-    end
-}
-
-:: src/smoke.lua
---[[pod_format="raw",created="2025-08-23 12:11:50",modified="2025-08-23 15:50:58",revision=68]]
-Smoke=Object:extend()
-
-Pixel=Object:extend()
-function Pixel:new(x,y)
-	self.start_x=x
-	self.spawn_x_min = x-5
-	self.spawn_x_max = x+5
-	self.x=randi(self.spawn_x_min, self.spawn_x_max)
-	self.y=y
-	self.speed=rnd({0.2, 0.3, 0.4})
-	self.max_y=y-15
-	self.x_min=self.x-2
-	self.x_max=self.x+2
-	self.move_dir=0.3
-end
-
-function Pixel:update()
-	
-	if self.y <= self.max_y then
-		self.y = self.max_y+15
-		self.x=randi(self.spawn_x_min, self.spawn_x_max)
-		self.speed=rnd({0.2, 0.3, 0.4})
-		self.x_min=self.x-2
-		self.x_max=self.x+2
-	else
-		self.y-=self.speed
-	end
-	
-	self.x+=self.move_dir
-	if self.x <= self.x_min or self.x >= self.x_max then
-		self.move_dir*=-1
-	end
-
-end
-
-function Pixel:draw()
-	pset(self.x,self.y,8)
-end
-
-local pos={4,6,10,12,14,28,30,32,34,36,54,56,58,60,78,80,82,84,106,108,112,116}
-
-function Smoke:new(x,y)
-	self.pixels = {}
-	for i=1,10 do 
-		local p = Pixel(x,y)
-		add(self.pixels, p)
-	end
-end
-
-function Smoke:update()
-	foreach(self.pixels, function(obj) obj:update() end)
-end
-
-function Smoke:draw()
-	foreach(self.pixels, function(obj) obj:draw() end)
-end
-
-function Smoke:set_y(y)
-	self.y=y
-	for p in all(self.pixels) do
-		p.max_y=y-15
-	end
-end
-:: src/.info.pod
-b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTI1IDEyOjQxOjE5Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMDo0MDo1NSJdXQ==
-:: main.lua
---[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-08-23 12:24:00",revision=375]]
---cd ("/projects/level-3")
-
--- Lib
-include("lib/classic.lua")
-
--- Kgo
-include("kgo/functions.lua")
-include("kgo/hitbox.lua")
-include("kgo/clock.lua")
-
--- Src
-include("src/smoke.lua")
-include("src/missile.lua")
-include("src/bullet.lua")
-include("src/player.lua")
-include("src/recticle.lua")
-include("src/building.lua")
-include("src/game.lua")
 :: .info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMDo0MDo1NSIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
-IzEyIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJzcmMvbWlzc2lsZS5sdWEjMiIsd29y
-a3NwYWNlX2luZGV4PTF9LHtsb2NhdGlvbj0ic3JjL2dhbWUubHVhIzExMCIsd29ya3NwYWNlX2lu
-ZGV4PTF9LHtsb2NhdGlvbj0ic3JjL3Ntb2tlLmx1YSM2MSIsd29ya3NwYWNlX2luZGV4PTF9LHts
-b2NhdGlvbj0ic3JjL2J1aWxkaW5nLmx1YSMzMCIsd29ya3NwYWNlX2luZGV4PTF9LHtsb2NhdGlv
-bj0ic3JjL3BsYXllci5sdWEjMjAiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249ImdmeC8w
-LmdmeCIsd29ya3NwYWNlX2luZGV4PTJ9LHtsb2NhdGlvbj0ibWFwLzAubWFwIix3b3Jrc3BhY2Vf
-aW5kZXg9M30se2xvY2F0aW9uPSJzZngvMC5zZngiLHdvcmtzcGFjZV9pbmRleD00fX1dXQ==
+OC0yMyAyMjo0NDowMiIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
+IzEzIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJzcmMvbWlzc2lsZS5sdWEjMiIsd29y
+a3NwYWNlX2luZGV4PTF9LHtsb2NhdGlvbj0ic3JjL2dhbWUubHVhIzEiLHdvcmtzcGFjZV9pbmRl
+eD0xfSx7bG9jYXRpb249InNyYy9zbW9rZS5sdWEjMiIsd29ya3NwYWNlX2luZGV4PTF9LHtsb2Nh
+dGlvbj0ic3JjL2J1aWxkaW5nLmx1YSM2MCIsd29ya3NwYWNlX2luZGV4PTF9LHtsb2NhdGlvbj0i
+c3JjL3BsYXllci5sdWEjMjAiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249InNyYy9waXhl
+bC5sdWEjMjYiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249ImdmeC8wLmdmeCIsd29ya3Nw
+YWNlX2luZGV4PTJ9LHtsb2NhdGlvbj0ibWFwLzAubWFwIix3b3Jrc3BhY2VfaW5kZXg9M30se2xv
+Y2F0aW9uPSJzZngvMC5zZngiLHdvcmtzcGFjZV9pbmRleD00fX1dXQ==
 :: [eoc]
