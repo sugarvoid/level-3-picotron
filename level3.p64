@@ -19,7 +19,7 @@ SwA_FA4GLAIPTwAUgg8UDw4PFB8OCAAwDw4VBQBBBAUuBlcALxQWWQAmL-AwMgAND30BHg8xAP--
 ----------------------------------------------9iUG09OH19
 :: gfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMzoxMDo0MyJdXQ==
+OC0yNCAxMjoxNzo0OSJdXQ==
 :: kgo/
 :: kgo/clock.lua
 clock = {}
@@ -97,7 +97,7 @@ end
 
 :: kgo/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjQ4Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMzoxMDo0MyJdXQ==
+OC0yNCAxMjoxNzo0OSJdXQ==
 :: lib/
 :: lib/classic.lua
 --
@@ -167,7 +167,7 @@ function Object:__call(...)
 end
 :: lib/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA4LTIzIDExOjU5OjIwIixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMzoxMDo0MyJdXQ==
+OC0yNCAxMjoxNzo0OSJdXQ==
 :: map/
 :: map/0.map
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ4Iixtb2RpZmllZD0iMjAyNS0w
@@ -176,7 +176,7 @@ KCJpMTYiLDMyAwAvIjABAP--8C8zMgQACw8BAE0vMzIEAAsPAQD---------------9X8QoiKSxo
 aWRkZW49ZmFsc2UscGFuX3g9LTYwCgDyAHk9LTU0LHRpbGVfaD0xNgoAEHcKAKB6b29tPTAuNX19
 :: map/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMzoxMDo0MyJdXQ==
+OC0yNCAxMjoxNzo0OSJdXQ==
 :: sfx/
 :: sfx/0.sfx
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM1OjQ5Iixtb2RpZmllZD0iMjAyNS0w
@@ -186,7 +186,7 @@ Bg8gEAEgASAB8AACEAIOEAEgDyEgATAPQPDDDygP--DGD-gKD-8PgA-3Dw0B8AkBEAYOMAD-----
 -70f-wEArM-ID0AADxBA--_w8P8BAP-qUP----8p
 :: sfx/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMzoxMDo0MyJdXQ==
+OC0yNCAxMjoxNzo0OSJdXQ==
 :: src/
 :: src/building.lua
 --[[pod_format="raw",created="2025-08-23 12:22:36",modified="2025-08-23 23:03:16",revision=31]]
@@ -248,7 +248,7 @@ function Building:take_damage()
 end
 
 :: src/bullet.lua
---[[pod_format="raw",created="2025-08-03 21:02:44",modified="2025-08-03 21:02:44",revision=0]]
+--[[pod_format="raw",created="2025-08-03 21:02:44",modified="2025-08-24 12:15:59",revision=1]]
 Bullet = Object:extend()
 
 
@@ -309,6 +309,7 @@ function Bullet:update()
     if self.ignited then
         for m in all(all_missiles) do
             if is_colliding(self.hitbox, m.hitbox) then
+            	player_score+=1
                 del(all_missiles, m)
             end
         end
@@ -486,11 +487,11 @@ function Smoke:set_y(y)
 end
 :: src/.info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTA0LTI1IDEyOjQxOjE5Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMzoxMDo0MyJdXQ==
+OC0yNCAxMjoxNzo0OSJdXQ==
 :: main.lua
---[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-08-23 22:33:31",revision=390]]
+--[[pod_format="raw",created="2025-01-17 10:35:48",modified="2025-08-24 12:17:39",revision=402]]
 
-is_debug = true
+is_debug = false
 
 -- Lib
 include("lib/classic.lua")
@@ -552,6 +553,8 @@ function _draw()
 		recticle:draw()
 
 		foreach(all_bullets, function(obj) obj:draw() end)
+		
+		p8_print(player_score, 110, 121, 7)
 
 		p8_print("en", 4, 121, 7)
 		rectfill(4 + 8, 121, 4 + 8 + player.energy, 125, 9)
@@ -686,13 +689,14 @@ end
 
 :: .info.pod
 b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI1LTAxLTE3IDEwOjM3OjQ1Iixtb2RpZmllZD0iMjAyNS0w
-OC0yMyAyMzoxMDo0MyIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
-IzEzIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJzcmMvbWlzc2lsZS5sdWEjMTQiLHdv
-cmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249InNyYy9nYW1lLmx1YSMxIix3b3Jrc3BhY2VfaW5k
-ZXg9MX0se2xvY2F0aW9uPSJzcmMvc21va2UubHVhIzIiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9j
-YXRpb249InNyYy9idWlsZGluZy5sdWEjNDEiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249
-InNyYy9wbGF5ZXIubHVhIzIwIix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJzcmMvcGl4
-ZWwubHVhIzE5Iix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJnZngvMC5nZngiLHdvcmtz
-cGFjZV9pbmRleD0yfSx7bG9jYXRpb249Im1hcC8wLm1hcCIsd29ya3NwYWNlX2luZGV4PTN9LHts
-b2NhdGlvbj0ic2Z4LzAuc2Z4Iix3b3Jrc3BhY2VfaW5kZXg9NH19XV0=
+OC0yNCAxMjoxNzo0OSIscnVudGltZT0yMCx3b3Jrc3BhY2VzPXt7bG9jYXRpb249Im1haW4ubHVh
+IzIiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249InNyYy9taXNzaWxlLmx1YSMxNCIsd29y
+a3NwYWNlX2luZGV4PTF9LHtsb2NhdGlvbj0ic3JjL2dhbWUubHVhIzEiLHdvcmtzcGFjZV9pbmRl
+eD0xfSx7bG9jYXRpb249InNyYy9zbW9rZS5sdWEjMiIsd29ya3NwYWNlX2luZGV4PTF9LHtsb2Nh
+dGlvbj0ic3JjL2J1aWxkaW5nLmx1YSM0MSIsd29ya3NwYWNlX2luZGV4PTF9LHtsb2NhdGlvbj0i
+c3JjL3BsYXllci5sdWEjMjAiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249InNyYy9waXhl
+bC5sdWEjMTkiLHdvcmtzcGFjZV9pbmRleD0xfSx7bG9jYXRpb249InNyYy9idWxsZXQubHVhIzYx
+Iix3b3Jrc3BhY2VfaW5kZXg9MX0se2xvY2F0aW9uPSJnZngvMC5nZngiLHdvcmtzcGFjZV9pbmRl
+eD0yfSx7bG9jYXRpb249Im1hcC8wLm1hcCIsd29ya3NwYWNlX2luZGV4PTN9LHtsb2NhdGlvbj0i
+c2Z4LzAuc2Z4Iix3b3Jrc3BhY2VfaW5kZXg9NH19XV0=
 :: [eoc]
